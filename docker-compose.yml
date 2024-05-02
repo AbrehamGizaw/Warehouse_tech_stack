@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  # PostgreSQL database
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_USER: your_username
+      POSTGRES_PASSWORD: your_password
+      POSTGRES_DB: your_database
+
+  # Airflow
+  airflow:
+    image: apache/airflow
+    depends_on:
+      - postgres
+    ports:
+      - 8080:8080  # Airflow webserver port
+    volumes:
+      - ./airflow:/opt/airflow  # Mount local Airflow DAGs and configuration
+
+  # Redash (optional)
+  redash:
+    image: redash/redash
+    depends_on:
+      - postgres
+    ports:
+      - 5000:5000  # Redash webserver port
+    environment:
+      REDASH_DATABASE_URL: postgresql://your_username:your_password@postgres:5432/your_database
+
+volumes:
+  postgres_data:  # Persistent volume for PostgreSQL data (optional)
